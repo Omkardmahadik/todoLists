@@ -32,7 +32,7 @@ body {
 /* Utility Classes */
 .container {
     width: 90%;
-    max-width: 400px;
+    max-width: 500px;
     background-color: var(--box-background-color);
     padding: 20px;
     border-radius: 8px;
