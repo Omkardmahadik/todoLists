@@ -1,50 +1,61 @@
-document.addEventListener(`DOMContentLoaded`, () => {
-  // day1: adding array
+document.addEventListener("DOMContentLoaded", () => {
+  // Step 1: Create DOM elements
+  const todoInput = document.getElementById("todo-input");
+  const addTaskButton = document.getElementById("add-task-btn");
+  const todoList = document.getElementById("todo-list");
 
-  const todoInput = document.getElementById(`todo-input`);
-  const addTaskButton = document.getElementById(`add-task-btn`);
-  const todoList = document.getElementById(`todo-list`);
-
-  // arrat to store data in the list
+  // Step 2: Initialize tasks from localStorage
   let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
-  tasks.forEach((tasks) => renderTask(tasks));
+  // Step 3: Render tasks on page load
+  tasks.forEach((task) => renderTask(task));
 
-  // in this code the input will  add the data in console
-  addTaskButton.addEventListener(`click`, () => {
+  // Add a new task
+  addTaskButton.addEventListener("click", () => {
     const taskText = todoInput.value.trim();
     if (taskText === "") return;
 
     const newTask = {
       id: Date.now(),
-      Text: taskText,
+      text: taskText, // Fixed case from 'Text' to 'text'
       completed: false,
     };
     tasks.push(newTask);
     saveTasks();
-    todoInput.value = ""; // clear input
-    console.log(tasks);
+    renderTask(newTask); // Render the task after adding
+    todoInput.value = ""; // Clear input
   });
 
+  // Render a task in the list
   function renderTask(task) {
-    const li = document.createElement(`li`)
-    li.setAttribute(`data-id`,task.id)
-    if(task.completed) li.classList.add(`completed`)
-    li.innerHTML = `<span>${task.Text}</span>
-    <button >delete</button>
+    const li = document.createElement("li");
+    li.setAttribute("data-id", task.id);
+    if (task.completed) li.classList.add("completed");
+    li.innerHTML = `
+      <span>${task.text}</span>
+      <button class="delete-btn">Delete</button>
     `;
-    
-    li.addEventListener(`click`,(e)=>{
-       if(e.target.tagName === `BUTTON`) return;
 
-       task.completed = !task.completed;
-       li.classList.toggle(`completed`);
-       saveTasks();
+    // Toggle task completion
+    li.addEventListener("click", (e) => {
+      if (e.target.tagName === "BUTTON") return; // Prevent toggle when clicking delete
+      task.completed = !task.completed;
+      li.classList.toggle("completed");
+      saveTasks();
     });
-    todoList.appendChild(li)
+
+    // Delete a task
+    li.querySelector(".delete-btn").addEventListener("click", () => {
+      tasks = tasks.filter((t) => t.id !== task.id);
+      saveTasks();
+      li.remove(); // Remove the task visually
+    });
+
+    todoList.appendChild(li);
   }
 
+  // Save tasks to localStorage
   function saveTasks() {
-    localStorage.setItem(`tasks`, JSON.stringify(tasks));
+    localStorage.setItem("tasks", JSON.stringify(tasks));
   }
 });
